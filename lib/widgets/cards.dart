@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 import '../models/project.dart';
+import '../pages/project_details_page.dart';
 import '../themes/app_theme.dart';
 import '../utils/helpers.dart';
 
@@ -27,7 +28,7 @@ Widget summaryCard({required String title, required String value, required Icon 
   );
 }
 
-Widget projectCard({required Project project}) {
+Widget projectCard(BuildContext context, {required Project project}) {
   List<IconData> cardIcons = [
     Icons.business,
     Icons.house,
@@ -156,7 +157,12 @@ Widget projectCard({required Project project}) {
                 IconButton.filled(
                   color: Colors.white.withAlpha(100),
                   onPressed: () {
-
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProjectDetailsPage(project: project),
+                      ),
+                    );
                   },
                   icon: Icon(CupertinoIcons.chevron_right)
                 )
@@ -165,6 +171,45 @@ Widget projectCard({required Project project}) {
 
           ],
         ),
+      ),
+    ),
+  );
+}
+
+Widget smallInfoCard({
+  required String title,
+  required Widget leading,
+  required String value,
+  required String subtitle,
+}) {
+  return Card(
+    elevation: 0,
+    color: AppTheme.primaryCardColor,
+    surfaceTintColor: Colors.transparent,
+    shape: RoundedRectangleBorder(borderRadius: AppTheme.cardBorderRadius),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: AppTheme.textStyle(fontSize: 10, color: Colors.white.withAlpha(140))),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              leading,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(value, style: AppTheme.textStyle(fontSize: 13, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(subtitle, style: AppTheme.textStyle(fontSize: 11, color: Colors.white.withAlpha(140)), overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ],
       ),
     ),
   );

@@ -1,5 +1,6 @@
 import 'package:erp_sample/providers/tab_navigation_provider.dart';
 import 'package:erp_sample/themes/app_theme.dart';
+import 'package:erp_sample/utils/helpers.dart';
 import 'package:erp_sample/widgets/cards.dart';
 import 'package:erp_sample/widgets/general.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ class DashboardPage extends StatelessWidget {
 
             sectionDivider(),
 
-            totalBudgetUtilizationWidget(app.totalBudgetUtilization, app.totalBudget, app.totalSpent),
+            totalBudgetUtilizationWidget(app.company.currency, app.totalBudgetUtilization, app.totalBudget, app.totalSpent),
 
             sectionDivider(),
 
@@ -87,7 +88,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget totalBudgetUtilizationWidget(double totalBudgetUtilization, double totalBudget, double totalSpent) {
+  Widget totalBudgetUtilizationWidget(String currency, double totalBudgetUtilization, double totalBudget, double totalSpent) {
     return Card(
       color: AppTheme.primaryCardColor,
       shape: RoundedRectangleBorder(borderRadius: AppTheme.cardBorderRadius),
@@ -100,12 +101,12 @@ class DashboardPage extends StatelessWidget {
             SizedBox(height: 5,),
             RichText(
               text: TextSpan(
-                text: NumberFormat.compactCurrency(symbol: "৳ ", decimalDigits: 2).format(totalSpent),
+                text: formatMoneyShorthand(currency, totalSpent),
                 style: AppTheme.textStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
                 children: [
                   TextSpan(text: "/", style: AppTheme.textStyle(fontSize: 14, color: Colors.white.withAlpha(150))),
                   TextSpan(
-                    text: NumberFormat.compactCurrency(symbol: "৳ ", decimalDigits: 2).format(totalBudget),
+                    text: formatMoneyShorthand(currency, totalBudget),
                     style: AppTheme.textStyle(fontSize: 16, color: Colors.white.withAlpha(150)),
                   )
                 ]
@@ -119,11 +120,11 @@ class DashboardPage extends StatelessWidget {
             SizedBox(height: 8,),
             Row(
               children: [
-                Expanded(child: Text("৳ 0", style: AppTheme.textStyle(color: Colors.white.withAlpha(150))),),
+                Expanded(child: Text(formatMoneyShorthand(currency, 0), style: AppTheme.textStyle(color: Colors.white.withAlpha(150))),),
                 Text("50%", style: AppTheme.textStyle(color: Colors.white.withAlpha(150))),
                 Expanded(
                   child: Text(
-                    NumberFormat.compactCurrency(symbol: "৳ ", decimalDigits: 2).format(totalBudget), textAlign: TextAlign.right,
+                    formatMoneyShorthand(currency, totalBudget), textAlign: TextAlign.right,
                     style: AppTheme.textStyle(fontSize: 14, color: Colors.white.withAlpha(150))
                   ),
                 ),
@@ -201,29 +202,24 @@ class DashboardPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Recent Projects", style: AppTheme.textStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              TextButton(
-                onPressed: () {
-                  context.read<TabNavigationProvider>().setIndex(1);
-                },
-                child: Text("View All", style: AppTheme.textStyle(fontSize: 14, color: AppTheme.primaryFgColor))
-              ),
-            ],
+        sectionHeader(
+          title: "Recent Projects",
+          trailing: TextButton(
+              onPressed: () {
+                context.read<TabNavigationProvider>().setIndex(1);
+              },
+              child: Text("View All", style: AppTheme.textStyle(fontSize: 14, color: AppTheme.primaryFgColor))
           ),
         ),
-        SizedBox(height: 12,),
-        
+
+        SizedBox(height: 5,),
+
         SizedBox(
           height: 270,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, index) {
-              return projectCard(project: app.recentProjects[index]);
+              return projectCard(context,project: app.recentProjects[index]);
             },
             separatorBuilder: (context, index) {
               return SizedBox(width: 10,);

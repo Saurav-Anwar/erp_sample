@@ -91,7 +91,7 @@ class _ProjectListPageState extends State<ProjectListPage> {
                   final project = projects[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: projectCard(project: project),
+                    child: projectCard(context, project: project),
                   );
                 },
               ),

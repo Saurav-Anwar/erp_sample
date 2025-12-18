@@ -18,3 +18,18 @@ Widget genericKPI({required String label, required String value}) {
     ),
   );
 }
+
+Widget sectionHeader({required String title, Widget? trailing}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 8),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(title, style: AppTheme.textStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        if(trailing != null)...[
+          trailing,
+        ],
+      ],
+    ),
+  );
+}

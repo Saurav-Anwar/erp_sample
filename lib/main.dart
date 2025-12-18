@@ -65,6 +65,11 @@ class MyApp extends StatelessWidget {
             foregroundColor: WidgetStatePropertyAll(AppTheme.primaryBgColor),
           )
         ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          backgroundColor: AppTheme.primaryFgColor,
+          foregroundColor: AppTheme.primaryBgColor,
+          elevation: 12,
+        ),
         iconButtonTheme: IconButtonThemeData(
           style: ButtonStyle(
             backgroundColor: WidgetStatePropertyAll(Color.alphaBlend(Colors.white.withAlpha(30), AppTheme.primaryBgColor)),
