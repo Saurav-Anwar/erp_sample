@@ -217,6 +217,7 @@ class DashboardPage extends StatelessWidget {
           ),
         ),
         SizedBox(height: 12,),
+        
         SizedBox(
           height: 270,
           child: ListView.separated(
