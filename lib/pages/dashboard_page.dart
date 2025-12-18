@@ -1,4 +1,6 @@
+import 'package:erp_sample/providers/tab_navigation_provider.dart';
 import 'package:erp_sample/themes/app_theme.dart';
+import 'package:erp_sample/widgets/cards.dart';
 import 'package:erp_sample/widgets/general.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,15 +17,15 @@ class DashboardPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
-          padding: const EdgeInsets.all(6),
+          padding: const EdgeInsets.only(left: 16),
           child: Badge(
             smallSize: 10,
             backgroundColor: Colors.green,
             child: CircleAvatar(
               radius: 30,
-              backgroundImage: app.user.imageUrl == null
-                  ? AssetImage("assets/images/dummy-user.png")
-                  : NetworkImage(app.user.imageUrl!),
+              child: app.user.imageUrl == null
+                  ? ClipOval(child: Image.asset("assets/images/dummy-user.png",))
+                  : Image.network(app.user.imageUrl!),
             )
           ),
         ),
@@ -44,8 +46,8 @@ class DashboardPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             greetingWidget(app.user.name.split(" ").first),
 
@@ -55,6 +57,15 @@ class DashboardPage extends StatelessWidget {
 
             sectionDivider(),
 
+            projectCountWidget(app.totalProjects, app.completedProjects),
+
+            sectionDivider(),
+
+            summarySection(context),
+
+            sectionDivider(),
+
+            recentProjectsSection(context),
           ],
         ),
       ),
@@ -78,7 +89,7 @@ class DashboardPage extends StatelessWidget {
 
   Widget totalBudgetUtilizationWidget(double totalBudgetUtilization, double totalBudget, double totalSpent) {
     return Card(
-      color: Colors.lightBlue.shade100.withAlpha(30),
+      color: AppTheme.primaryCardColor,
       shape: RoundedRectangleBorder(borderRadius: AppTheme.cardBorderRadius),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -121,6 +132,105 @@ class DashboardPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget projectCountWidget(int totalProjects, int completedProjects) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0),
+      child: Row(
+        children: [
+          genericKPI(label: "Total Projects", value: totalProjects.toString()),
+          genericKPI(label: "Completed Projects", value: completedProjects.toString()),
+          SizedBox(width: 20,),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              iconSize: 25,
+              minimumSize: Size(45, 45),
+              padding: EdgeInsets.zero,
+              shape: const CircleBorder()
+            ),
+            onPressed: () {
+
+            },
+            child: Icon(Icons.add)
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget summarySection(BuildContext context) {
+    final app = context.watch<AppDataProvider>();
+    
+    return GridView(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisExtent: 150
+      ),
+      children: [
+        summaryCard(
+          title: "Active Projects",
+          value: app.activeProjects.toString(),
+          icon: Icon(Icons.business),
+          isLight: false,
+        ),
+
+        summaryCard(
+          title: "Approvals",
+          value: app.totalApprovals.toString(),
+          icon: Icon(Icons.business),
+          isLight: true,
+        ),
+
+        summaryCard(
+          title: "Open Tasks",
+          value: app.inProgressTasks.length.toString(),
+          icon: Icon(Icons.business),
+          isLight: false,
+        ),
+      ],
+    );
+  }
+
+  Widget recentProjectsSection(BuildContext context) {
+    final app = context.watch<AppDataProvider>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Recent Projects", style: AppTheme.textStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              TextButton(
+                onPressed: () {
+                  context.read<TabNavigationProvider>().setIndex(1);
+                },
+                child: Text("View All", style: AppTheme.textStyle(fontSize: 14, color: AppTheme.primaryFgColor))
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 12,),
+        SizedBox(
+          height: 270,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return projectCard(project: app.recentProjects[index]);
+            },
+            separatorBuilder: (context, index) {
+              return SizedBox(width: 10,);
+            },
+            itemCount: app.recentProjects.length
+          ),
+        ),
+      ],
     );
   }
 }

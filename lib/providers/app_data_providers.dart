@@ -64,24 +64,30 @@ class AppDataProvider extends ChangeNotifier {
   // dashboard
 
   int get totalProjects => company.projects.length;
+  int get activeProjects => company.projects.where((project) => project.status != 'Completed').length;
+  int get completedProjects => company.projects.where((project) => project.status == 'Completed').length;
+  List<Project> get recentProjects {
+    final sortedProjects = [...company.projects];
+
+    sortedProjects.sort(
+          (a, b) => DateTime.parse(b.timeline.startDate)
+          .compareTo(DateTime.parse(a.timeline.startDate)),
+    );
+
+    return sortedProjects.take(2).toList();
+  }
 
   int get totalTasks =>
-      company.projects.fold(0, (sum, p) => sum + p.tasks.length);
+      company.projects.fold(0, (sum, project) => sum + project.tasks.length);
 
   double get totalBudget =>
-      company.projects.fold(0, (sum, p) => sum + p.budget.total);
+      company.projects.fold(0, (sum, project) => sum + project.budget.total);
 
   double get totalSpent =>
-      company.projects.fold(0, (sum, p) => sum + p.budget.spent);
+      company.projects.fold(0, (sum, project) => sum + project.budget.spent);
 
   double get totalBudgetUtilization =>
       totalBudget == 0 ? 0 : totalSpent / totalBudget;
-
-  int get pendingApprovals =>
-      company.projects
-          .expand((p) => p.payments)
-          .where((p) => p.approvalFlow.status != 'Approved')
-          .length;
 
   // project list
 
@@ -90,26 +96,34 @@ class AppDataProvider extends ChangeNotifier {
   // task and team
 
   List<Task> get allTasks =>
-      company.projects.expand((p) => p.tasks).toList();
+      company.projects.expand((project) => project.tasks).toList();
 
   List<Task> get completedTasks =>
-      allTasks.where((t) => t.progress == 100).toList();
+      allTasks.where((task) => task.progress == 100).toList();
 
   List<Task> get inProgressTasks =>
-      allTasks.where((t) => t.progress < 100).toList();
+      allTasks.where((task) => task.progress < 100).toList();
 
   // payments and approvals
 
   List<Payment> get allPayments =>
-      company.projects.expand((p) => p.payments).toList();
+      company.projects.expand((project) => project.payments).toList();
 
   List<Payment> get approvedPayments =>
       allPayments
-          .where((p) => p.approvalFlow.status == 'Approved')
+          .where((project) => project.approvalFlow.status == 'Approved')
           .toList();
+
+  int get totalApprovals => approvedPayments.length;
 
   List<Payment> get pendingPayments =>
       allPayments
-          .where((p) => p.approvalFlow.status != 'Approved')
+          .where((project) => project.approvalFlow.status != 'Approved')
           .toList();
+
+  int get pendingApprovals =>
+      company.projects
+          .expand((project) => project.payments)
+          .where((project) => project.approvalFlow.status != 'Approved')
+          .length;
 }

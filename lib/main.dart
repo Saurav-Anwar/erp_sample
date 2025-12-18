@@ -1,14 +1,21 @@
+import 'package:erp_sample/providers/tab_navigation_provider.dart';
 import 'package:erp_sample/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'app_root.dart';
 import 'providers/app_data_providers.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AppDataProvider()..loadData(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AppDataProvider()..loadData(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => TabNavigationProvider(),
+        ),
+      ],
       child: const MyApp(),
     ),
   );
@@ -26,6 +33,8 @@ class MyApp extends StatelessWidget {
           elevation: 8,
           backgroundColor: AppTheme.primaryBgColor,
           foregroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          toolbarHeight: 70,
           actionsIconTheme: const IconThemeData(color: Colors.white),
           actionsPadding: EdgeInsets.symmetric(horizontal: 15),
         ),
@@ -47,6 +56,19 @@ class MyApp extends StatelessWidget {
           linearTrackColor: AppTheme.primaryBgColor,
           circularTrackColor: AppTheme.primaryBgColor,
           borderRadius: BorderRadius.circular(50),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            elevation: WidgetStatePropertyAll(8),
+            shadowColor: WidgetStatePropertyAll(AppTheme.primaryFgColor.withAlpha(80)),
+            backgroundColor: WidgetStatePropertyAll(AppTheme.primaryFgColor),
+            foregroundColor: WidgetStatePropertyAll(AppTheme.primaryBgColor),
+          )
+        ),
+        iconButtonTheme: IconButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Color.alphaBlend(Colors.white.withAlpha(30), AppTheme.primaryBgColor)),
+          )
         ),
         scaffoldBackgroundColor: AppTheme.primaryBgColor,
         colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primaryBgColor),
