@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 import 'budget.dart';
 import 'payment.dart';
 import 'risk.dart';
@@ -38,11 +40,39 @@ class Project {
       status: data['status'],
       timeline: Timeline.fromJson(data['timeline']),
       manager: Manager.fromJson(data['manager']),
-      teams: (data['teams'] as List).map((e) => Team.fromJson(e)).toList(),
+      teams: (data['teams'] as List).map((e) {
+        try {
+          return Team.fromJson(e);
+        } catch (e) {
+          debugPrint("error parsing teams");
+          return Team(teamId: '', name: '', members: []);
+        }
+      }).toList(),
       budget: Budget.fromJson(data['budget']),
-      tasks: (data['tasks'] as List).map((e) => Task.fromJson(e)).toList(),
-      payments: (data['payments'] as List).map((e) => Payment.fromJson(e)).toList(),
-      risks: (data['risks'] as List).map((e) => Risk.fromJson(e)).toList(),
+      tasks: (data['tasks'] as List).map((e) {
+        try {
+          return Task.fromJson(e);
+        } catch (e) {
+          debugPrint("error parsing tasks");
+          return Task(taskId: '', title: '', assignedTeam: '', priority: '', progress: 0, subTasks: [], activityLogs: []);
+        }
+      }).toList(),
+      payments: (data['payments'] as List).map((e) {
+        try {
+          return Payment.fromJson(e);
+        } catch (e) {
+          debugPrint("error parsing payments");
+          return Payment(paymentId: '', amount: 0, requestedBy: '', requestDate: '', invoices: [], approvalFlow: ApprovalFlow(approvedBy: '', approvedDate: '', status: ''));
+        }
+      }).toList(),
+      risks: (data['risks'] as List).map((e) {
+        try {
+          return Risk.fromJson(e);
+        } catch (e) {
+          debugPrint("error parsing risks");
+          return Risk(riskId: '', description: '', severity: '', mitigation: '');
+        }
+      }).toList(),
     );
   }
 }

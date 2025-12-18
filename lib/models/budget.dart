@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class Budget {
   final double total;
   final double spent;
@@ -13,8 +11,8 @@ class Budget {
 
   factory Budget.fromJson(Map<String, dynamic> data) {
     return Budget(
-      total: data['total'],
-      spent: data['spent'],
+      total: (data['total'] as num).toDouble(),
+      spent: (data['spent'] as num).toDouble(),
       categories: (data['categories'] as List)
           .map((e) => BudgetCategory.fromJson(e))
           .toList(),
@@ -26,7 +24,7 @@ class BudgetCategory {
   final String name;
   final double allocated;
   final double spent;
-  List<BudgetCategory> subCategories = [];
+  final List<BudgetCategory> subCategories;
 
   BudgetCategory({
     required this.name,
@@ -38,8 +36,8 @@ class BudgetCategory {
   factory BudgetCategory.fromJson(Map<String, dynamic> data) {
     return BudgetCategory(
       name: data['name'],
-      allocated: data['allocated'],
-      spent: data['spent'],
+      allocated: (data['allocated'] as num).toDouble(),
+      spent: (data['spent'] as num).toDouble(),
       subCategories: data['subCategories'] == null ? [] :
           (data['subCategories'] as List)
           .map((e) => BudgetCategory.fromJson(e))

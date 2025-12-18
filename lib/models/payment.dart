@@ -1,6 +1,6 @@
 class Payment {
   final String paymentId;
-  final int amount;
+  final double amount;
   final String requestedBy;
   final String requestDate;
   final List<Invoice> invoices;
@@ -18,7 +18,7 @@ class Payment {
   factory Payment.fromJson(Map<String, dynamic> data) {
     return Payment(
       paymentId: data['paymentId'],
-      amount: data['amount'],
+      amount: (data['amount'] as num).toDouble(),
       requestedBy: data['requestedBy'],
       requestDate: data['requestDate'],
       invoices: data['invoices'] == null ? [] : (data['invoices'] as List)
@@ -40,11 +40,11 @@ class Invoice {
     required this.amount,
   });
 
-  factory Invoice.fromJson(Map<String, dynamic> json) {
+  factory Invoice.fromJson(Map<String, dynamic> data) {
     return Invoice(
-      invoiceId: json['invoiceId'],
-      vendor: json['vendor'],
-      amount: json['amount'],
+      invoiceId: data['invoiceId'],
+      vendor: data['vendor'],
+      amount: (data['amount'] as num).toDouble(),
     );
   }
 }
@@ -60,11 +60,11 @@ class ApprovalFlow {
     required this.status,
   });
 
-  factory ApprovalFlow.fromJson(Map<String, dynamic> json) {
+  factory ApprovalFlow.fromJson(Map<String, dynamic> data) {
     return ApprovalFlow(
-      approvedBy: json['approvedBy'],
-      approvedDate: json['approvedDate'],
-      status: json['status'],
+      approvedBy: data['approvedBy'],
+      approvedDate: data['approvedDate'],
+      status: data['status'],
     );
   }
 }
