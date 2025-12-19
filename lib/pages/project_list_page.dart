@@ -83,16 +83,16 @@ class _ProjectListPageState extends State<ProjectListPage> {
               ),
             ),
 
+            SizedBox(height: 5),
+
             // Project List
             Expanded(
-              child: ListView.builder(
+              child: ListView.separated(
                 itemCount: projects.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 5),
                 itemBuilder: (context, index) {
                   final project = projects[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: projectCard(context, project: project),
-                  );
+                  return projectCard(context, project: project);
                 },
               ),
             ),

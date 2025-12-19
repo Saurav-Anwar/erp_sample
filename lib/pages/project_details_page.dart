@@ -3,11 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import '../models/budget.dart';
-import '../models/manager.dart';
 import '../models/project.dart';
-import '../models/task.dart';
 import '../models/team.dart';
-import '../models/timeline.dart';
 import '../providers/app_data_providers.dart';
 import '../themes/app_theme.dart';
 import '../utils/helpers.dart';
@@ -50,20 +47,6 @@ class ProjectDetailsPage extends StatelessWidget {
     return Icons.timer;
   }
 
-  String initials(String name) {
-    final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
-    if (parts.isEmpty) return '?';
-    if (parts.length == 1) {
-      final s = parts.first;
-      return (s.length >= 2 ? s.substring(0, 2) : s.substring(0, 1)).toUpperCase();
-    }
-    final a = parts.first;
-    final b = parts[1];
-    final ai = a.isNotEmpty ? a.substring(0, 1) : '?';
-    final bi = b.isNotEmpty ? b.substring(0, 1) : '?';
-    return '$ai$bi'.toUpperCase();
-  }
-
   @override
   Widget build(BuildContext context) {
     final app = context.watch<AppDataProvider>();
@@ -86,7 +69,9 @@ class ProjectDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Navigator.pop(context);
+          },
           child: const Icon(Icons.arrow_back_ios_new_rounded),
         ),
         title: Column(
@@ -175,7 +160,7 @@ class ProjectDetailsPage extends StatelessWidget {
           if (prj.teams.isEmpty) ...[
             noTeamMembers(),
           ]
-          else ...prj.teams.map((team) => teamRow(context, team)).toList(),
+          else ...prj.teams.map((team) => teamRow(context, team)),
 
           const SizedBox(height: 80),
         ],
