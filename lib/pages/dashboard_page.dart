@@ -66,6 +66,11 @@ class DashboardPage extends StatelessWidget {
             sectionDivider(),
 
             recentProjectsSection(context),
+
+            sectionDivider(),
+            sectionDivider(),
+
+            needsAttentionSection(),
           ],
         ),
       ),
@@ -227,6 +232,50 @@ class DashboardPage extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget needsAttentionSection() {
+    return Builder(
+      builder: (context) {
+        final app = context.watch<AppDataProvider>();
+
+        final riskItems = app.allRisks;
+
+        if (riskItems.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            sectionHeader(
+              title: "Needs Attention",
+            ),
+            const SizedBox(height: 15,),
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                final item = riskItems[index];
+                final projectName = item.key;
+                final risk = item.value;
+                return RiskItem(
+                  title: risk.description,
+                  projectName: projectName,
+                  subtitle: risk.mitigation,
+                  severity: risk.severity,
+                  onTap: () {},
+                );
+              },
+              separatorBuilder: (context, index) {
+                return const SizedBox(height: 12);
+              },
+              itemCount: riskItems.length,
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import '../models/company.dart';
 import '../models/project.dart';
+import '../models/risk.dart';
 import '../models/task.dart';
 import '../models/payment.dart';
 
@@ -75,6 +76,40 @@ class AppDataProvider extends ChangeNotifier {
     );
 
     return sortedProjects.take(2).toList();
+  }
+
+  int severityRank(String severity) {
+    switch (severity.toLowerCase()) {
+      case 'high':
+        return 0;
+      case 'medium':
+        return 1;
+      case 'low':
+        return 2;
+      default:
+        return 3;
+    }
+  }
+
+  List<MapEntry<String, Risk>> get allRisks {
+    final risks = <MapEntry<String, Risk>>[];
+    for (final project in company.projects) {
+      for (final risk in project.risks) {
+        risks.add(MapEntry(project.name, risk));
+      }
+    }
+
+    risks.sort((a, b) {
+      final bySeverity = severityRank(a.value.severity).compareTo(severityRank(b.value.severity));
+      if (bySeverity != 0) return bySeverity;
+
+      final byProject = a.key.compareTo(b.key);
+      if (byProject != 0) return byProject;
+
+      return a.value.description.compareTo(b.value.description);
+    });
+
+    return risks;
   }
 
   int get totalTasks =>

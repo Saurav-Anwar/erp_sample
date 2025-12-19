@@ -62,7 +62,6 @@ class ProjectDetailsPage extends StatelessWidget {
     final remaining = (prj.budget.total - prj.budget.spent).clamp(0.0, double.infinity);
 
     final pendingTasks = prj.tasks.where((t) => t.progress < 100).length;
-    final flatMembers = prj.teams.expand((t) => t.members).toList();
     final scheduleLabel = prj.status == 'Completed' ? 'On Schedule' : DateTime.parse(
         prj.timeline.endDate).isBefore(DateTime.now()) ? 'Overdue' : 'On Schedule';
 

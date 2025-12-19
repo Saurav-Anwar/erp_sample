@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
+import '../models/payment.dart';
 import '../models/project.dart';
 import '../pages/project_details_page.dart';
 import '../themes/app_theme.dart';
@@ -169,6 +170,199 @@ Widget projectCard(BuildContext context, {required Project project}) {
               ],
             )
 
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+Widget paymentRequestCard(
+  BuildContext context, {
+  required Payment payment,
+  required String currency,
+  String? projectName,
+}) {
+  final status = (payment.approvalFlow.status == 'Approved') ? 'Approved' : 'Pending';
+  final statusFg = status == 'Approved' ? Colors.green : Colors.amber;
+  final statusBg = Color.alphaBlend(statusFg.withAlpha(45), AppTheme.primaryCardColor);
+
+  final invoiceCount = payment.invoices.length;
+  final invoices = payment.invoices;
+  final invoiceLabel = invoiceCount == 0
+      ? 'No invoices'
+      : invoiceCount == 1
+          ? '1 invoice'
+          : '$invoiceCount invoices';
+
+  return ConstrainedBox(
+    constraints: const BoxConstraints(maxWidth: 350),
+    child: Card(
+      elevation: 0,
+      color: AppTheme.primaryCardColor,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: AppTheme.cardBorderRadius),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Color.alphaBlend(AppTheme.primaryFgColor.withAlpha(25), AppTheme.primaryBgColor),
+                  child: const Icon(Icons.payments_rounded, size: 18, color: Colors.white),
+                ),
+
+                const SizedBox(width: 12),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(payment.paymentId, style: AppTheme.textStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+
+                      if (projectName != null && projectName.trim().isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(projectName, style: AppTheme.textStyle(fontSize: 11, color: Colors.white.withAlpha(160)), overflow: TextOverflow.ellipsis),
+                      ],
+
+                      const SizedBox(height: 2),
+                      Text(invoiceLabel, style: AppTheme.textStyle(fontSize: 11, color: Colors.white.withAlpha(160))),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(width: 10),
+
+                Chip(
+                  padding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                  backgroundColor: statusBg,
+                  surfaceTintColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppTheme.cardBorderRadius,
+                    side: const BorderSide(color: Colors.transparent),
+                  ),
+                  label: Text(status, style: AppTheme.textStyle(fontSize: 10, fontWeight: FontWeight.bold, color: statusFg)),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+
+
+            if (invoices.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              ...invoices.map((invoice) {
+                return Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        invoice.vendor,
+                        style: AppTheme.textStyle(fontSize: 12, color: Colors.white.withAlpha(160)),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+
+                    Text(
+                      formatMoneyShorthand(currency, invoice.amount),
+                      textAlign: TextAlign.right,
+                      style: AppTheme.textStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
+                    )
+                  ],
+                );
+              }),
+            ],
+
+            Divider(color: Colors.grey.withAlpha(80), height: 16),
+
+            Align(
+              alignment: AlignmentGeometry.centerRight,
+              child: Text(
+                formatMoneyShorthand(currency, payment.amount),
+                textAlign: TextAlign.right,
+                style: AppTheme.textStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
+
+            const SizedBox(height: 4),
+
+            Container(
+              padding: EdgeInsetsGeometry.all(8),
+              decoration: BoxDecoration(
+                borderRadius: AppTheme.cardBorderRadius,
+                color: Color.alphaBlend(Colors.white.withAlpha(25), AppTheme.primaryBgColor),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 14,
+                          backgroundColor: Color.alphaBlend(Colors.white.withAlpha(12), AppTheme.primaryBgColor),
+                          child: Text(initials(payment.requestedBy), style: AppTheme.textStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white.withAlpha(220))),
+                        ),
+              
+                        const SizedBox(width: 10),
+              
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(payment.requestedBy, style: AppTheme.textStyle(fontSize: 12, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+                              Text(formatIsoDate(payment.requestDate), style: AppTheme.textStyle(fontSize: 11, color: Colors.white.withAlpha(140)), overflow: TextOverflow.ellipsis),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              
+                  const SizedBox(width: 10),
+              
+                  Expanded(
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 14,
+                          backgroundColor: Color.alphaBlend(statusFg.withAlpha(18), AppTheme.primaryBgColor),
+                          child: Icon(
+                            status == 'Approved' ? Icons.verified_rounded : Icons.hourglass_bottom_rounded,
+                            size: 16,
+                            color: statusFg,
+                          ),
+                        ),
+              
+                        const SizedBox(width: 10),
+              
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                payment.approvalFlow.approvedBy,
+                                style: AppTheme.textStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white.withAlpha(220)),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                payment.approvalFlow.approvedDate.isEmpty ? 'Awaiting approval' : formatIsoDate(payment.approvalFlow.approvedDate),
+                                style: AppTheme.textStyle(fontSize: 11, color: Colors.white.withAlpha(140)),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

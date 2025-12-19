@@ -16,6 +16,14 @@ String formatMoneyShorthand(String currency, double amount) {
   return NumberFormat.compactCurrency(symbol: symbol, decimalDigits: 2).format(amount);
 }
 
+String formatIsoDate(String iso, {String pattern = 'MMM d, yyyy'}) {
+  try {
+    return DateFormat(pattern).format(DateTime.parse(iso));
+  } catch (_) {
+    return iso;
+  }
+}
+
 String initials(String name) {
   final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
   if (parts.isEmpty) return '?';

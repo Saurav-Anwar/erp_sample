@@ -28,6 +28,16 @@ class _ProjectListPageState extends State<ProjectListPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Projects', style: AppTheme.textStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+        actions: [
+          InkWell(
+            borderRadius: BorderRadius.circular(50),
+            onTap: () {},
+            child: const Padding(
+              padding: EdgeInsets.all(5),
+              child: Icon(Icons.more_vert),
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
